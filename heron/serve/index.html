@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <link rel="icon" href="data:," />
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style>
+            .content {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                font-variant-numeric: tabular-nums;
+            }
+
+            input {
+                font-family: inherit;
+                font-size: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <input type="text" id="input" name="input" value="2.0" />
+            <input type="button" id="compute" name="compute" value="compute" /> result:
+            <output id="output" for="compute"></output>
+        </div>
+        <script>
+            let input = document.getElementById("input");
+            let computeButton = document.getElementById("compute");
+            let outputDiv = document.getElementById("output");
+
+            let heron = null;
+
+            WebAssembly.instantiateStreaming(fetch("heron.wasm")).then((obj) => {
+                heron = obj.instance.exports.heron;
+            });
+
+            computeButton.onclick = function (event) {
+                const value = parseFloat(input.value);
+                const result = heron(value);
+                outputDiv.innerHTML = result;
+            };
+        </script>
+    </body>
+</html>
