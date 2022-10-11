@@ -32,7 +32,7 @@
             let heron = null;
 
             WebAssembly.instantiateStreaming(fetch("heron.wasm")).then((obj) => {
-                heron = obj.instance.exports.heron_int;
+                heron = obj.instance.exports.heron;
             });
 
             computeButton.onclick = function (event) {
