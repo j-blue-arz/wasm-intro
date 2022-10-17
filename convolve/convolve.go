@@ -1,7 +1,7 @@
 package main
 
 type grayImage struct {
-	buffer []uint8
+	buffer []byte
 	width  int
 	height int
 }
@@ -9,11 +9,11 @@ type grayImage struct {
 // kernel is expected to be normalized
 type kernel3 [9]float32
 
-func (image grayImage) get(row, col int) uint8 {
+func (image grayImage) get(row, col int) byte {
 	return image.buffer[row*image.width+col]
 }
 
-func (image grayImage) set(row, col int, value uint8) {
+func (image grayImage) set(row, col int, value byte) {
 	image.buffer[row*image.width+col] = value
 }
 
@@ -30,11 +30,11 @@ func convolveGray(img grayImage, k kernel3) (grayImage, error) {
 
 	width := img.width - 2
 	height := img.height - 2
-	result := grayImage{make([]uint8, width*height), width, height}
+	result := grayImage{make([]byte, width*height), width, height}
 	for row := 1; row < img.height-1; row++ {
 		for col := 1; col < img.width-1; col++ {
 			value := convolveGrayPixel(img, k, row, col)
-			result.set(row-1, col-1, uint8(value))
+			result.set(row-1, col-1, byte(value))
 		}
 	}
 	return result, nil

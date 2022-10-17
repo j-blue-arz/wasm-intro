@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <link rel="icon" href="data:," />
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style>
+            .content {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                font-variant-numeric: tabular-nums;
+            }
+
+            input {
+                font-family: inherit;
+                font-size: 100%;
+            }
+        </style>
+        <script src="wasm_exec.js"></script>
+    </head>
+    <body>
+        <div class="content">
+            <img id="sourceImage" src="fish.jpg" />
+            <canvas id="targetCanvas"></canvas>
+            <input type="button" id="compute" value="compute" />
+        </div>
+        <script>
+            (() => {
+                this.go = new Go();
+            })();
+
+            WebAssembly.instantiateStreaming(fetch("convolve.wasm"), window.go.importObject).then(
+                (obj) => {
+                    window.go.run(obj.instance);
+                }
+            );
+
+            let sourceImage = document.getElementById("sourceImage");
+            let canvas = document.getElementById("targetCanvas");
+            let computeButton = document.getElementById("compute");
+
+            computeButton.onclick = function (event) {
+                canvas.width = sourceImage.width;
+                canvas.height = sourceImage.height;
+
+                var context = canvas.getContext("2d");
+                context.drawImage(sourceImage, 0, 0);
+
+                let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+                convolve.setImage(imageData.data);
+            };
+        </script>
+    </body>
+</html>
