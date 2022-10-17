@@ -17,14 +17,14 @@ func convolve(this js.Value, args []js.Value) interface{} {
 	blue := img[2*size : 3*size]
 	alpha := img[3*size:]
 
-	rgbaImage := MakeRGBAImage(red, green, blue, alpha, width, height)
-	kernel := Kernel3{
+	rgbaImage := rgbaImage{red, green, blue, alpha, width, height}
+	kernel := kernel3{
 		1.0 / 8.0, 0, -1.0 / 8.0,
 		2.0 / 8.0, 0, -2.0 / 8.0,
 		1.0 / 8.0, 0, -1.0 / 8.0,
 	}
 
-	return ConvolveRGBA(*rgbaImage, kernel)
+	return convolveRGBA(*rgbaImage, kernel)
 }
 
 func main() {

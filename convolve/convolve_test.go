@@ -12,7 +12,7 @@ func TestConvolveGray(t *testing.T) {
 		}, width: 4, height: 4,
 	}
 
-	k := Kernel3{
+	k := kernel3{
 		1.0 / 8.0, 0, -1.0 / 8.0,
 		2.0 / 8.0, 0, -2.0 / 8.0,
 		1.0 / 8.0, 0, -1.0 / 8.0,
@@ -54,9 +54,9 @@ func TestRGBA(t *testing.T) {
 		0, 50, 100, 100,
 		0, 50, 100, 150,
 	}
-	img := RGBAImage{buffer, buffer, buffer, buffer, 4, 4}
+	img := rgbaImage{buffer, buffer, buffer, buffer, 4, 4}
 
-	k := Kernel3{
+	k := kernel3{
 		1.0 / 8.0, 0, -1.0 / 8.0,
 		2.0 / 8.0, 0, -2.0 / 8.0,
 		1.0 / 8.0, 0, -1.0 / 8.0,
