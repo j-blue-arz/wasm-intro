@@ -1,4 +1,17 @@
-package main
+package image
+
+type RGBAImage struct {
+	red    []byte
+	green  []byte
+	blue   []byte
+	alpha  []byte
+	width  int
+	height int
+}
+
+func MakeRGBAImage(red, green, blue, alpha []byte, width, height int) *RGBAImage {
+	return &RGBAImage{red, green, blue, alpha, width, height}
+}
 
 type grayImage struct {
 	buffer []byte
@@ -7,7 +20,7 @@ type grayImage struct {
 }
 
 // kernel is expected to be normalized
-type kernel3 [9]float32
+type Kernel3 [9]float32
 
 func (image grayImage) get(row, col int) byte {
 	return image.buffer[row*image.width+col]
@@ -17,7 +30,7 @@ func (image grayImage) set(row, col int, value byte) {
 	image.buffer[row*image.width+col] = value
 }
 
-func (k kernel3) get(row, col int) float32 {
+func (k Kernel3) get(row, col int) float32 {
 	return k[row*3+col]
 }
 
@@ -26,8 +39,7 @@ func (k kernel3) get(row, col int) float32 {
 // will be located at x*width + y with regard to the image width
 //
 // The returned image has its size reduced by 2 in both directions.
-func convolveGray(img grayImage, k kernel3) (grayImage, error) {
-
+func convolveGray(img grayImage, k Kernel3) grayImage {
 	width := img.width - 2
 	height := img.height - 2
 	result := grayImage{make([]byte, width*height), width, height}
@@ -37,10 +49,10 @@ func convolveGray(img grayImage, k kernel3) (grayImage, error) {
 			result.set(row-1, col-1, byte(value))
 		}
 	}
-	return result, nil
+	return result
 }
 
-func convolveGrayPixel(img grayImage, kern kernel3, row, col int) float32 {
+func convolveGrayPixel(img grayImage, kern Kernel3, row, col int) float32 {
 	var value float32
 	for x, kx := col-1, 2; x <= col+1; x, kx = x+1, kx-1 {
 		for y, ky := row-1, 2; y <= row+1; y, ky = y+1, ky-1 {
@@ -56,6 +68,11 @@ func convolveGrayPixel(img grayImage, kern kernel3, row, col int) float32 {
 // Each component is assigned a consecutive index within the array
 //
 // The returned image has size width-1, height-1
-func convolveRGBA() {
+func ConvolveRGBA(img RGBAImage, k Kernel3) RGBAImage {
+	red := convolveGray(grayImage{img.red, img.width, img.height}, k)
+	green := convolveGray(grayImage{img.green, img.width, img.height}, k)
+	blue := convolveGray(grayImage{img.blue, img.width, img.height}, k)
+	alpha := convolveGray(grayImage{img.alpha, img.width, img.height}, k)
 
+	return RGBAImage{red.buffer, green.buffer, blue.buffer, alpha.buffer, img.width, img.height}
 }

@@ -6,10 +6,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <style>
             .content {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                font-variant-numeric: tabular-nums;
+                height: 100%;
+                width: 100%;
             }
 
             input {
@@ -49,7 +47,7 @@
 
                 let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-                convolve.setImage(imageData.data);
+                convolve.setImage(imageData.data, sourceImage.width, sourceImage.height);
             };
         </script>
     </body>

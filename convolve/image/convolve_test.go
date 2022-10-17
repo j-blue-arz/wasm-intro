@@ -1,4 +1,4 @@
-package main
+package image
 
 import "testing"
 
@@ -12,13 +12,13 @@ func TestConvolveGray(t *testing.T) {
 		}, width: 4, height: 4,
 	}
 
-	k := kernel3{
+	k := Kernel3{
 		1.0 / 8.0, 0, -1.0 / 8.0,
 		2.0 / 8.0, 0, -2.0 / 8.0,
 		1.0 / 8.0, 0, -1.0 / 8.0,
 	}
 
-	result, _ := convolveGray(image, k)
+	result := convolveGray(image, k)
 
 	if result.width != 2 {
 		t.Fatalf("Expected 2x2 image, but width was %d", result.width)
@@ -45,4 +45,22 @@ func TestConvolveGray(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestRGBA(t *testing.T) {
+	buffer := []uint8{
+		0, 0, 0, 0,
+		0, 50, 50, 50,
+		0, 50, 100, 100,
+		0, 50, 100, 150,
+	}
+	img := RGBAImage{buffer, buffer, buffer, buffer, 4, 4}
+
+	k := Kernel3{
+		1.0 / 8.0, 0, -1.0 / 8.0,
+		2.0 / 8.0, 0, -2.0 / 8.0,
+		1.0 / 8.0, 0, -1.0 / 8.0,
+	}
+
+	ConvolveRGBA(img, k)
 }
