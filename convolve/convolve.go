@@ -1,4 +1,4 @@
-package image
+package main
 
 type RGBAImage struct {
 	red    []byte

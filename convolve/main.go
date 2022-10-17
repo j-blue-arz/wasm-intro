@@ -3,7 +3,6 @@
 package main
 
 import (
-	"github.com/j-blue-arz/wasm-intro/convolve/image"
 	"syscall/js"
 )
 
@@ -18,14 +17,14 @@ func convolve(this js.Value, args []js.Value) interface{} {
 	blue := img[2*size : 3*size]
 	alpha := img[3*size:]
 
-	rgbaImage := image.MakeRGBAImage(red, green, blue, alpha, width, height)
-	kernel := image.Kernel3{
+	rgbaImage := MakeRGBAImage(red, green, blue, alpha, width, height)
+	kernel := Kernel3{
 		1.0 / 8.0, 0, -1.0 / 8.0,
 		2.0 / 8.0, 0, -2.0 / 8.0,
 		1.0 / 8.0, 0, -1.0 / 8.0,
 	}
 
-	return image.ConvolveRGBA(*rgbaImage, kernel)
+	return ConvolveRGBA(*rgbaImage, kernel)
 }
 
 func main() {
