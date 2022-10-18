@@ -48,9 +48,9 @@
                 let sourceImageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
                 let imageBuffer = window.convolve(sourceImageData.data, sourceImage.width, sourceImage.height);
-
-                let newImageData = context.createImageData(sourceImageData)
-                context.putImageData(newImageData. ß. ß)
+                
+                let newImageData = new ImageData(imageBuffer, sourceImage.width-2, sourceImage.height-2);
+                context.putImageData(newImageData, 0, 0)
 
 
             };
