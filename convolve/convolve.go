@@ -64,7 +64,7 @@ func convolveGrayPixel(img grayImage, kern kernel3, row, col int) float32 {
 // Each component is assigned a consecutive index within the array
 //
 // The returned image has size width-1, height-1
-func ConvolveRGBA(img rgbaImage, k kernel3) rgbaImage {
+func convolveRGBA(img rgbaImage, k kernel3) rgbaImage {
 	red := convolveGray(grayImage{img.red, img.width, img.height}, k)
 	green := convolveGray(grayImage{img.green, img.width, img.height}, k)
 	blue := convolveGray(grayImage{img.blue, img.width, img.height}, k)

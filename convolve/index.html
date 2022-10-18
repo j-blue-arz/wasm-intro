@@ -45,9 +45,14 @@
                 var context = canvas.getContext("2d");
                 context.drawImage(sourceImage, 0, 0);
 
-                let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                let sourceImageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-                convolve.setImage(imageData.data, sourceImage.width, sourceImage.height);
+                let imageBuffer = window.convolve(sourceImageData.data, sourceImage.width, sourceImage.height);
+
+                let newImageData = context.createImageData(sourceImageData)
+                context.putImageData(newImageData. ß. ß)
+
+
             };
         </script>
     </body>

@@ -7,24 +7,38 @@ import (
 )
 
 func convolve(this js.Value, args []js.Value) interface{} {
-	var img []byte
-	js.CopyBytesToGo(img, args[0])
+	var inputBuffer []byte
+	js.CopyBytesToGo(inputBuffer, args[0])
 	width := args[1].Int()
 	height := args[2].Int()
 	size := width * height
-	red := img[0:size]
-	green := img[size : 2*size]
-	blue := img[2*size : 3*size]
-	alpha := img[3*size:]
+	red := inputBuffer[0:size]
+	green := inputBuffer[size : 2*size]
+	blue := inputBuffer[2*size : 3*size]
+	alpha := inputBuffer[3*size:]
 
-	rgbaImage := rgbaImage{red, green, blue, alpha, width, height}
+	image := rgbaImage{red, green, blue, alpha, width, height}
 	kernel := kernel3{
 		1.0 / 8.0, 0, -1.0 / 8.0,
 		2.0 / 8.0, 0, -2.0 / 8.0,
 		1.0 / 8.0, 0, -1.0 / 8.0,
 	}
 
-	return convolveRGBA(*rgbaImage, kernel)
+	resultImage := convolveRGBA(image, kernel)
+
+	var outputBuffer []byte
+	outputBuffer = append(outputBuffer, resultImage.red)
+	outputBuffer = append(outputBuffer, resultImage.green)
+	outputBuffer = append(outputBuffer, resultImage.blue)
+	outputBuffer = append(outputBuffer, resultImage.alpha)
+
+	size = resultImage.width * resultImage.height
+
+	result := js.Global().Get("Uint8ClampedArray").New(size)
+	js.CopyBytesToJS(result, outputBuffer)
+
+	return result
+
 }
 
 func main() {
