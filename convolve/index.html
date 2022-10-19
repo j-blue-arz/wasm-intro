@@ -20,6 +20,7 @@
     <body>
         <div class="content">
             <img id="sourceImage" src="fish.jpg" />
+            <canvas id="sourceCanvas"></canvas>
             <canvas id="targetCanvas"></canvas>
             <input type="button" id="compute" value="compute" />
         </div>
@@ -35,21 +36,29 @@
             );
 
             let sourceImage = document.getElementById("sourceImage");
+            let sourceCanvas = document.getElementById("sourceCanvas");
             let canvas = document.getElementById("targetCanvas");
             let computeButton = document.getElementById("compute");
 
             computeButton.onclick = function (event) {
-                canvas.width = sourceImage.width;
-                canvas.height = sourceImage.height;
+                sourceCanvas.width = sourceImage.width;
+                sourceCanvas.height = sourceImage.height;
 
-                var context = canvas.getContext("2d");
-                context.drawImage(sourceImage, 0, 0);
+                var sourceContext = sourceCanvas.getContext("2d");
+                sourceContext.drawImage(sourceImage, 0, 0);
 
-                let sourceImageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                let sourceImageData = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
 
                 let imageBuffer = window.convolve(sourceImageData.data, sourceImage.width, sourceImage.height);
+
+                const newWidth = sourceImage.width - 2;
+                const newHeight = sourceImage.height - 2;
                 
-                let newImageData = new ImageData(imageBuffer, sourceImage.width-2, sourceImage.height-2);
+                canvas.width = newWidth;
+                canvas.height = newHeight
+                var context = canvas.getContext("2d");
+
+                let newImageData = new ImageData(imageBuffer, newWidth, newHeight);
                 context.putImageData(newImageData, 0, 0)
 
 

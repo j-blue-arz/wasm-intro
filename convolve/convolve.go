@@ -1,15 +1,23 @@
 package main
 
-type rgbaImage struct {
-	red    []byte
-	green  []byte
-	blue   []byte
-	alpha  []byte
-	width  int
-	height int
-}
+type color int
 
-type grayImage struct {
+const (
+	red   color = 0
+	green color = 1
+	blue  color = 2
+)
+
+// all color and alpha
+const numChannels = 4
+
+var colorChannels = []color{red, green, blue}
+
+// Representation of a ImageData object as retrieved from a JS canvas
+// the buffer has size width*height*4.
+// the values for r, g, b, and a are interleaved int the buffer.
+// That is, the blue value of the pixel at row 20 and column 100 is at 20*width+100+2
+type canvasImage struct {
 	buffer []byte
 	width  int
 	height int
@@ -18,57 +26,44 @@ type grayImage struct {
 // kernel is expected to be normalized
 type kernel3 [9]float32
 
-func (image grayImage) get(row, col int) byte {
-	return image.buffer[row*image.width+col]
+func (image canvasImage) index(row, col int, c color) int {
+	return (row*image.width+col)*numChannels + int(c)
 }
 
-func (image grayImage) set(row, col int, value byte) {
-	image.buffer[row*image.width+col] = value
+func (image canvasImage) get(row, col int, c color) byte {
+	return image.buffer[image.index(row, col, c)]
+}
+
+func (image canvasImage) set(row, col int, c color, value byte) {
+	image.buffer[image.index(row, col, c)] = value
 }
 
 func (k kernel3) get(row, col int) float32 {
 	return k[row*3+col]
 }
 
-// The input and output image represent a row-wise image.
-// A pixel in row x and column y
-// will be located at x*width + y with regard to the image width
-//
 // The returned image has its size reduced by 2 in both directions.
-func convolveGray(img grayImage, k kernel3) grayImage {
+func convolveImage(img canvasImage, k kernel3) canvasImage {
 	width := img.width - 2
 	height := img.height - 2
-	result := grayImage{make([]byte, width*height), width, height}
+	result := canvasImage{make([]byte, width*height*4), width, height}
 	for row := 1; row < img.height-1; row++ {
 		for col := 1; col < img.width-1; col++ {
-			value := convolveGrayPixel(img, k, row, col)
-			result.set(row-1, col-1, byte(value))
+			for _, color := range colorChannels {
+				value := convolvePixel(img, k, row, col, color)
+				result.set(row-1, col-1, color, byte(value))
+			}
 		}
 	}
 	return result
 }
 
-func convolveGrayPixel(img grayImage, kern kernel3, row, col int) float32 {
+func convolvePixel(img canvasImage, kern kernel3, row, col int, c color) float32 {
 	var value float32
 	for x, kx := col-1, 2; x <= col+1; x, kx = x+1, kx-1 {
 		for y, ky := row-1, 2; y <= row+1; y, ky = y+1, ky-1 {
-			value += float32(img.get(y, x)) * kern.get(ky, kx)
+			value += float32(img.get(y, x, c)) * kern.get(ky, kx)
 		}
 	}
 	return value
-}
-
-// The input and output image have the same format as JS's ImageData object:
-// rgb image is provided by four separate channels for
-// Each color component is represented by an integer between 0 and 255.
-// Each component is assigned a consecutive index within the array
-//
-// The returned image has size width-2, height-2
-func convolveRGBA(img rgbaImage, k kernel3) rgbaImage {
-	red := convolveGray(grayImage{img.red, img.width, img.height}, k)
-	green := convolveGray(grayImage{img.green, img.width, img.height}, k)
-	blue := convolveGray(grayImage{img.blue, img.width, img.height}, k)
-	alpha := convolveGray(grayImage{img.alpha, img.width, img.height}, k)
-
-	return rgbaImage{red.buffer, green.buffer, blue.buffer, alpha.buffer, img.width - 2, img.height - 2}
 }
