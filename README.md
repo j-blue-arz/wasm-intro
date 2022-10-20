@@ -1,2 +1,2 @@
 # wasm-intro
-A couple of small C++ projects compiled to WebAssembly, for a short introductory presentation.
+A couple of example WebAssembly projects, for a short introductory presentation.
